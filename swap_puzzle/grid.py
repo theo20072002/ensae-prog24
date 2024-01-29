@@ -124,3 +124,8 @@ a=[2]
 b=[2]
 print(a==b)
 print (d.is_sorted())
+
+a=[1,2,3]
+b=[2,3,5]
+a+=b
+print(a)
