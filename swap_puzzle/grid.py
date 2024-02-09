@@ -3,6 +3,9 @@ This is the grid module. It contains the Grid class and its associated methods.
 """
 
 import random
+from graph import Graph
+import copy
+import queue
 
 class Grid():
     """
@@ -68,7 +71,7 @@ class Grid():
         cell1, cell2: tuple[int]
             The two cells to swap. They must be in the format (i, j) where i is the line and j the column number of the cell. 
         """
-        if abs (cell2[0]-cell1[0] )+abs (cell2[1]-cell1[1] )>1 : return None
+        if abs (cell2[0]-cell1[0] )+ abs (cell2[1]-cell1[1] )>1 or not (0<=cell2[0]<self.m and 0<=cell2[1]< self.n and 0<=cell1[0]<self.m and 0<=cell1[1]< self.n): return None
         self.state[cell2[0]][cell2[1]],self.state[cell1[0]][cell1[1]]=self.state[cell1[0]][cell1[1]],self.state[cell2[0]][cell2[1]]
 
     def swap_seq(self, cell_pair_list):
@@ -112,20 +115,92 @@ class Grid():
                 initial_state[i_line] = line_state
             grid = Grid(m, n, initial_state)
         return grid
+    
+    def hashable(self):
+        h=[]
+        for i in range(self.m):
+            h+=self.state[i]
+        return tuple(h)
 
-d= Grid(10,10,[])
+    def reciproque(self,hashe):
+        h=[]
+        a=list(hashe)
+        for i in range(self.m):
+            h.append(a[i*self.n:(i+1)*self.n])
+        self.state=h
+
+    def voisin (self) :
+        m=copy.deepcopy(self.state)
+        v=[]
+        for i in range(self.m):
+            for j in range(self.n):
+                self.state=copy.deepcopy(m)
+                self.swap((i,j),(i+1,j))
+                v.append(copy.deepcopy(self.hashable()))
+                self.state=copy.deepcopy(m)
+                self.swap((i,j),(i,j+1))
+                v.append(copy.deepcopy(self.hashable()))
+        self.state=copy.deepcopy(m)
+        return v
+
+
+
+    def create_graph(self):
+        g=Graph([])
+        file=queue.Queue()
+        file.put(self.hashable())
+        visited={self.hashable()}
+        edges=[]
+        while not file.empty() :
+            node1=file.get()
+            self.reciproque(node1)
+            v=self.voisin()
+            for node2 in v:
+                edges.append((node1,node2))
+                if node2 not in visited : 
+                    visited.add(node2)
+                    file.put(node2)
+        for edge in edges:
+            node1,node2=edge
+            if node2 not in self.graph or node1 not in self.graph[node2]:
+                g.add_edge(node1,node2)
+        return g
+
+                
+
+    
+    def bfs (self):
+        m,n=self.m, self.n
+        file=queue.Queue()
+        file.put(self.hashable())
+        visited={self.hashable(): True}
+        final_state=[]
+        path=[]
+
+        for i in range(m):
+            final_state +=range(i*n+1, (i+1)*n+1)
+        final_state=list(final_state)
+
+        while not file.empty():
+            node1=file.get()
+            self.reciproque(node1)
+            v=self.voisin()
+            for node2 in v:
+                if node2 not in visited : 
+                    visited[node2]=node1
+                    file.put(node2)
+                if node2 == final_state:
+
+                    
+                    while not node2 is True: 
+                        path.append(node2)
+                        node2=visited[node2]
+                    path.reverse()
+                    return path 
+
+d= Grid(4,4,[])
 print(d.is_sorted())
 d.swap((1,2),(2,2))
 print(d)
 
 d.swap_seq([((3,2),(2,2)),((4,2),(3,2))])
-print(d)
-a=[2]
-b=[2]
-print(a==b)
-print (d.is_sorted())
-
-a=[1,2,3]
-b=[2,3,5]
-a+=b
-print(a)

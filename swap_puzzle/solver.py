@@ -1,4 +1,7 @@
 from grid import Grid
+from time import time
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 
 class Solver(): 
     """
@@ -50,5 +53,28 @@ g=Grid(10,10,[])
 
 s=Solver()
 g.swap_seq([((3,5),(3,6)),((4,7),(4,8))])
+t=time()
 h=s.get_solution(g)
-print(h)
+print(h,time()-t)
+
+
+# pour afficher une matrice
+
+# pour definir un fond blanc
+cmap_blanc = LinearSegmentedColormap.from_list('blanc', ['#FFFFFF', '#FFFFFF'], N=256)
+
+
+matrice = g.state
+
+
+def afficher (matrice):
+
+    plt.imshow(matrice, cmap= cmap_blanc,interpolation='nearest')
+
+    for i in range(len(matrice)):
+        for j in range(len(matrice[0])):
+            plt.text(j, i, str(matrice[i][j]), ha='center', va='center', color='black')
+
+    plt.show()
+
+afficher(matrice)

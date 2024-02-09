@@ -2,6 +2,8 @@
 This is the graph module. It contains a minimalistic Graph class.
 """
 
+import queue
+
 class Graph:
     """
     A class representing undirected graphs as adjacency lists. 
@@ -97,8 +99,22 @@ class Graph:
         path: list[NodeType] | None
             The shortest path from src to dst. Returns None if dst is not reachable from src
         """ 
-        # TODO: implement this function (and remove the line "raise NotImplementedError").
-        raise NotImplementedError
+        visited={src:True}
+        file=queue.Queue()
+        file.put(src)
+        path=[]
+        while not file.empty() :
+            a=file.get()
+            for i in self.graph[a]:
+                if i not in visited : 
+                    visited[i]=a
+                    file.put(i)
+                if i==dst:
+                    while not i is True:
+                        path.append(i)
+                        i=visited[i]
+                    path.reverse()
+                    return path
 
     @classmethod
     def graph_from_file(cls, file_name):
@@ -131,4 +147,3 @@ class Graph:
                 else:
                     raise Exception("Format incorrect")
         return graph
-

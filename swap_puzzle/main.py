@@ -1,4 +1,5 @@
 from grid import Grid
+import numpy
 
 g = Grid(2, 3)
 print(g)
