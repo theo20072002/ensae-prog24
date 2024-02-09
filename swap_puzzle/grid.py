@@ -1,11 +1,17 @@
 """
 This is the grid module. It contains the Grid class and its associated methods.
 """
-
 import random
 from graph import Graph
 import copy
 import queue
+from time import time
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+
+
+# pour definir un fond blanc
+cmap_blanc = LinearSegmentedColormap.from_list('blanc', ['#FFFFFF', '#FFFFFF'], N=256)
 
 class Grid():
     """
@@ -64,7 +70,7 @@ class Grid():
 
     def swap(self, cell1, cell2):
         """
-        Implements the swap operation between two cells. Raises an exception if the swap is not allowed.
+        Implements the swap operation between two cells. Raises an exception if the swap is not allowed, especially if the cells aren't in the grid.
 
         Parameters: 
         -----------
@@ -117,52 +123,94 @@ class Grid():
         return grid
     
     def hashable(self):
+        """
+
+        transform our grid in an hashable object
+        
+        Parameters:
+        -------
+        grid: tuple
+
+        """     
         h=[]
+        # create a single list by concatenation of each line of our matrix
         for i in range(self.m):
             h+=self.state[i]
         return tuple(h)
 
     def reciproque(self,hashe):
+        """
+        
+        transform a tuple of a lsit in a matrix
+        
+        Output: 
+        -------
+        hashe: tuple
+
+        """     
+
         h=[]
         a=list(hashe)
         for i in range(self.m):
             h.append(a[i*self.n:(i+1)*self.n])
         self.state=h
 
-    def voisin (self) :
+    def neighbour (self) :
+        """
+        
+        return all the neighbour of the state we are in (self.state), if there is no neighbour return []
+        
+        Output: 
+        -------
+        hashe: list of tuple
+
+        """     
+
         m=copy.deepcopy(self.state)
-        v=[]
+        v=[] # list of all our neighbour
+        # to create all the swap possible, we only need to see the swap to the right and the swap to the bottom
         for i in range(self.m):
             for j in range(self.n):
                 self.state=copy.deepcopy(m)
                 self.swap((i,j),(i+1,j))
-                v.append(copy.deepcopy(self.hashable()))
+                v.append(copy.deepcopy(self.hashable()))#put the hashe of the neighbour in v
                 self.state=copy.deepcopy(m)
                 self.swap((i,j),(i,j+1))
-                v.append(copy.deepcopy(self.hashable()))
+                v.append(copy.deepcopy(self.hashable()))#put the hashe of the neighbour in v
         self.state=copy.deepcopy(m)
         return v
 
 
 
     def create_graph(self):
-        g=Graph([])
-        file=queue.Queue()
+        
+        """
+        
+        create the graph of all the permutations possible of our matrix, where the node are the permuation. To do taht, we use a breadth-first search algorithme.
+        
+        Output: 
+        -------
+        g: Graph 
+
+        """
+
+        g=Graph([]) #create the graph
+        file=queue.Queue() #create the queue of the node we have to explore
         file.put(self.hashable())
-        visited={self.hashable()}
-        edges=[]
+        visited={self.hashable()} # create a set of the nodes already seen 
+        edges=[]# create the list of all the edges of the graph
         while not file.empty() :
-            node1=file.get()
-            self.reciproque(node1)
-            v=self.voisin()
-            for node2 in v:
+            node1=file.get()# node1 is a node
+            self.reciproque(node1)# we put the state of our graphe on the node1 state, to do our swap in neighbour 
+            v=self.neighbour()
+            for node2 in v:# node2 is a node
                 edges.append((node1,node2))
-                if node2 not in visited : 
+                if node2 not in visited : # if node2 is seen for the first, node2 become visited and it's going to be explore later 
                     visited.add(node2)
                     file.put(node2)
-        for edge in edges:
+        for edge in edges: #for each edges of our graph, we create the same edge in our graph exept if it was already add in our graph, because (i,j) and (j,i) represente the same edge. 
             node1,node2=edge
-            if node2 not in self.graph or node1 not in self.graph[node2]:
+            if node2 not in g.graph or node1 not in g.graph[node2]:
                 g.add_edge(node1,node2)
         return g
 
@@ -170,37 +218,60 @@ class Grid():
 
     
     def bfs (self):
+        """
+        
+        apply the bfs in creating the graph at the same time to find one of the shortest path to solve the problem 
+        
+        Output: 
+        -------
+        path: list of node 
+
+        """
         m,n=self.m, self.n
-        file=queue.Queue()
+        file=queue.Queue()#create the queue of the node we have to explore
         file.put(self.hashable())
-        visited={self.hashable(): True}
-        final_state=[]
-        path=[]
+        visited={self.hashable(): True} # create a dictionnary wich take as kee the son and as value the father of each edges of the graph. the father of scr is True
+        final_state=[] #is the hashe of the final matrix 
+        path=[]# is the path of our nodes
 
+        #create final state
         for i in range(m):
-            final_state +=range(i*n+1, (i+1)*n+1)
-        final_state=list(final_state)
+            final_state +=list(range(i*n+1, (i+1)*n+1))
+        final_state=tuple(final_state)
 
-        while not file.empty():
+
+        while not file.empty():#  return nothing if after exploring all our graph we don't find any solution
             node1=file.get()
-            self.reciproque(node1)
-            v=self.voisin()
-            for node2 in v:
+            self.reciproque(node1) # we put the state of our graphe on the node1 state, to do our swap in neighbour 
+            for node2 in self.neighbour():# node2 is one of the node related to a in our graph
                 if node2 not in visited : 
-                    visited[node2]=node1
+                    visited[node2]=node1# we put the son node2 as kee in visited related to the value node1 wich is it father in our graph
                     file.put(node2)
+                
                 if node2 == final_state:
-
-                    
-                    while not node2 is True: 
-                        path.append(node2)
+                    while not node2 is True: # create the path thank's to the dictionnary visited and when the son become True (father of the first state)
+                        self.reciproque(node2)# we put the state of node2 on current state of our graphe to put the node of the path on a matrix mode in path  
+                        path.append(self.state)
                         node2=visited[node2]
-                    path.reverse()
+                    path.reverse()# to put the path in the rigth order
                     return path 
 
+
+    def afficher (self):
+
+        plt.imshow(self.state, cmap= cmap_blanc,interpolation='nearest')
+
+        for i in range(self.m):
+            for j in range(self.n):
+                plt.text(j, i, str(self.state[i][j]), ha='center', va='center', color='black')
+
+        plt.show()
+
+
 d= Grid(4,4,[])
-print(d.is_sorted())
+
 d.swap((1,2),(2,2))
-print(d)
 
 d.swap_seq([((3,2),(2,2)),((4,2),(3,2))])
+
+d.afficher()

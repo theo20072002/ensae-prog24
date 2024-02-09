@@ -3,19 +3,34 @@ from time import time
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
+
 class Solver(): 
     """
     A solver class, to be implemented.
     """
     def put_in_place(self,g,k):
-        ligne_k,colone_k=k//g.n,k%g.n
+        """
+        Put the element k of the matrix at it place. raise an error if k isn't in grid 
+        Parameters: 
+        -----------
+        g=Grid
+        k=int (in the grid)
+        
+        Output: 
+        -------
+        h: list of swap
+        """
+        
+        ligne_k,colone_k=k//g.n,k%g.n #take the position where we want to put k+1
+        #we take the place of the current element k+1 in the list and we stock it in the tule cell1
         for i in range(g.m):
             for j in range (g.n):
                 if g.state[i][j]==k+1: 
                     cell1=(i,j)
                     break
-        h=[]
-        i,j=cell1
+        h=[]# list of the sequence of swap to put k+1 at it target position
+        i,j=cell1 
+        # we put k+1 in the good colone first in doing sawp to the right or to the left
         if j<colone_k :
             while j!=colone_k:
                 h.append (((i,j),(i,j+1)))
@@ -24,6 +39,7 @@ class Solver():
             while j!=colone_k:
                 h.append (((i,j),(i,j-1)))
                 j-=1
+        # Then we put k+1 in the good line to the bottom or to the top
         if i<ligne_k:
             while i!= ligne_k:
                 h.append (((i,colone_k),(i+1,colone_k)))
@@ -32,7 +48,7 @@ class Solver():
             while i!= ligne_k:
                 h.append (((i,colone_k),(i-1,colone_k)))
                 i-=1
-        g.swap_seq(h)
+        g.swap_seq(h) # we actualise the current state of our grid after doing our sawp
         return h
 
     def get_solution(self,g):
@@ -40,41 +56,10 @@ class Solver():
         Solves the grid and returns the sequence of swaps at the format 
         [((i1, j1), (i2, j2)), ((i1', j1'), (i2', j2')), ...]. 
         """
-        # TODO: implement this function (and remove the line "raise NotImplementedError").
-        # NOTE: you can add other methods and subclasses as much as necessary. The only thing imposed is the format of the solution returned.
+
         h=[]
         for k in range(g.n*g.m):
             h+=self.put_in_place(g,k)
         return h
 
 
-
-g=Grid(10,10,[])
-
-s=Solver()
-g.swap_seq([((3,5),(3,6)),((4,7),(4,8))])
-t=time()
-h=s.get_solution(g)
-print(h,time()-t)
-
-
-# pour afficher une matrice
-
-# pour definir un fond blanc
-cmap_blanc = LinearSegmentedColormap.from_list('blanc', ['#FFFFFF', '#FFFFFF'], N=256)
-
-
-matrice = g.state
-
-
-def afficher (matrice):
-
-    plt.imshow(matrice, cmap= cmap_blanc,interpolation='nearest')
-
-    for i in range(len(matrice)):
-        for j in range(len(matrice[0])):
-            plt.text(j, i, str(matrice[i][j]), ha='center', va='center', color='black')
-
-    plt.show()
-
-afficher(matrice)
