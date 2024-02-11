@@ -1,0 +1,21 @@
+question 3:
+
+Oui il est possible de ressoudre la grille quelque soit l'état de départ car l'algorithme put_in_place permet, 
+si les elements de 1 à i sont rangées de rangér l'élements i+1 sans déranger les autres, car i+1 viendra soit par en dessous, soit par la droite. 
+
+La longueur du chemin obtenu n'est pas optimale, par exemple pour :
+2 4 
+3 1
+le chemin optimal est de sawp 4 et 1 puis 1 et 2, alors que l'algorithme swap 1 et 3, puis 1 et 2, puis 2 et 3, puis 3 et 4. 
+
+La fonction put_in_place va realiser au maximum n-1 swaps vers la droite ou vers la gauche, et n-1 sawps vers le haut ou vers le bas. 
+Ainsi put in place est de l'ordre de m+n swaps. Ainsi get_solution qui fait appel m*n fois à put_in_place va étre de l'ordre de m*n*(m+n) swaps.
+
+
+question 7:
+
+il y a un total de m*n objets a rangée dans une grille de de tail m*n, ce qui fait un total de m*n! permutations possible. 
+Soit un total de (m*n)! noeuds possibles. Hors pour chaque noeud, on peut faire n-1 swaps diferents de la gauche vers la droite pour chaque ligne, 
+et on peut faire m-1 sawps differrents du haut vers le bas pour chaque colone et ce sont les seuls swaps possibles. 
+Ce qui fait un total de (m-1)*n+(n-1)*m arêtes pour chaque noeud. 
+Soit un nombre d'arête total qui vaut : [(m-1)*n+(n-1)*m*]*(m*n)!/2  (on divise par 2 car l'arête qui vas de i vers j est la même que celle qui va de j vers i)

@@ -1,7 +1,7 @@
 from grid import Grid
 from time import time
-import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
+
+
 
 
 class Solver(): 

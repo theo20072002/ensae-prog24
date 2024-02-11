@@ -258,9 +258,19 @@ class Grid():
 
 
     def afficher (self):
+        """
+        
+        draw the current state of grid thank's to imshow from pyplot
+        
+        Output: 
+        -------
+        = show self.state
 
-        plt.imshow(self.state, cmap= cmap_blanc,interpolation='nearest')
+        """
+        #to create the grid with a white background 
+        plt.imshow(self.state, cmap= cmap_blanc)
 
+        # to put the numeber of each case in the grid
         for i in range(self.m):
             for j in range(self.n):
                 plt.text(j, i, str(self.state[i][j]), ha='center', va='center', color='black')
@@ -268,10 +278,3 @@ class Grid():
         plt.show()
 
 
-d= Grid(4,4,[])
-
-d.swap((1,2),(2,2))
-
-d.swap_seq([((3,2),(2,2)),((4,2),(3,2))])
-
-d.afficher()
