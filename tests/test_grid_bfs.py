@@ -7,6 +7,8 @@ from grid import Grid
 from solver import Solver
 from time import time
 
+# partie 1 dedier au 2 premiers TD:
+
 def test_grid1( file_name):
     #pour tester get_solution sur les fichiers grid
     grid=Grid.grid_from_file( file_name)
@@ -37,11 +39,24 @@ for i in range(5):
     print(time()-t)
 
 #pour verifier si le cheminde de get_solution est minimal :
-for i in range(4):
+for i in range(3):
     if len(test_grid1("input/grid"+str(i)+".in"))>len(test_grid3("input/grid"+str(i)+".in")):
         print("la solution n'est pas minimale")
     else : print("la solution est minimale")
 
 #pour tester bfs de grid
-print(test_grid3("input/grid"+str(2)+".in"))
+print(test_grid3("input/grid"+str(4)+".in"))
 
+# partie 2 dedier au 2 derniéres sances de TD:
+
+def test_A_star( file_name):
+    #pour tester bfs de graph sur les fichiers grid
+    s=Solver()
+    grid=Grid.grid_from_file( file_name)
+    src=grid.hashable()
+    final_state=[]
+    for i in range(grid.m):
+        final_state +=list(range(i*grid.n+1, (i+1)*grid.n+1))
+    dst=final_state)
+    graph=grid.create_graph()
+    return s.Astar(src,dst)

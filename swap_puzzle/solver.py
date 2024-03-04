@@ -1,7 +1,7 @@
 from grid import Grid
 from time import time
-
-
+import heapq
+from node import Node
 
 
 class Solver(): 
@@ -61,5 +61,38 @@ class Solver():
         for k in range(g.n*g.m):
             h+=self.put_in_place(g,k)
         return h
+
+    def Astar(self, grid, node_start, final_state):
+        grid.state= node_start
+        m,n=grid.m, grid.n
+        closedList = set()
+        Openlist =[]
+        path=[]
+        initial_state=Node(m,n,node_start)
+        closedList.add(initial_state.hashable())
+        heapq.heappush(Openlist, initial_state)
+        while len (Openlist)>0 :
+            curent_state = heapq.heappop(Openlist)
+            if curent_state.state==final_state:
+                while not curent_state.father is True: # create the path thank's to the dictionnary visited and when the son become True (father of the first state)
+                    path.append(curent_state.state)
+                    curent_state=curent_state.father
+                path.append(curent_state.state)
+                path.reverse()# to put the path in the rigth order
+                return path 
+            
+            curent_neighbours= grid.neighbour()
+            for hashed_neighbour in curent_neighbours: 
+                if not(hashed_neighbour in closedList):
+                    grid.reciproque(hashed_neighbour)
+                    neighbour=Node(m,n,grid.state)
+                    cost = curent_state.g + 1
+                    if curent_state.g == 0 or cost < neighbour.g:
+                        neighbour.g = cost
+                        neighbour.h = neighbour.heuristic()
+                        neighbour.f = neighbour.g + neighbour.h
+                        neighbour.father = curent_state
+                        heapq.heappush(Openlist, neighbour)
+        return None
 
 

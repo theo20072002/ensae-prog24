@@ -122,6 +122,7 @@ class Grid():
             grid = Grid(m, n, initial_state)
         return grid
     
+
     def hashable(self):
         """
 
@@ -276,5 +277,4 @@ class Grid():
                 plt.text(j, i, str(self.state[i][j]), ha='center', va='center', color='black')
 
         plt.show()
-
 

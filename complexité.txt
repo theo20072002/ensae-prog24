@@ -14,7 +14,7 @@ Ainsi put in place est de l'ordre de m+n swaps. Ainsi get_solution qui fait appe
 
 question 7:
 
-il y a un total de m*n objets a rangée dans une grille de de tail m*n, ce qui fait un total de m*n! permutations possible. 
+Il y a un total de m*n objets a rangée dans une grille de de tail m*n, ce qui fait un total de m*n! permutations possible. 
 Soit un total de (m*n)! noeuds possibles. Hors pour chaque noeud, on peut faire n-1 swaps diferents de la gauche vers la droite pour chaque ligne, 
 et on peut faire m-1 sawps differrents du haut vers le bas pour chaque colone et ce sont les seuls swaps possibles. 
 Ce qui fait un total de (m-1)*n+(n-1)*m arêtes pour chaque noeud. 

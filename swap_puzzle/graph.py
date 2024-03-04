@@ -99,21 +99,21 @@ class Graph:
         path: list[NodeType] | None
             The shortest path from src to dst. Returns None if dst is not reachable from src
         """ 
-        visited={src:True}
-        file=queue.Queue()
-        file.put(src)
-        path=[]
-        while not file.empty() :
-            a=file.get()
-            for i in self.graph[a]:
-                if i not in visited : 
-                    visited[i]=a
-                    file.put(i)
-                if i==dst:
-                    while not i is True:
-                        path.append(i)
-                        i=visited[i]
-                    path.reverse()
+        visited={src:True} # create a dictionnary wich take as kee the son and as value the father of each edges of the graph. the father of scr is True
+        file=queue.Queue() # create a queue of nodes already seen but not explored
+        file.put(src) 
+        path=[]# create a list wich is going to contain the shortest path to solv the problem
+        while not file.empty() : #  return nothing if after exploring all our graph we don't find any solution
+            node1=file.get()
+            for node2 in self.graph[node1]: # node2 is one of the node related to a in our graph
+                if node2 not in visited :
+                    visited[node2]=node1 # we put the son node2 as kee in visited related to the value node1 wich is it father in our graph
+                    file.put(node2)
+                if node2==dst: # if the solution is found
+                    while not node2 is True: # create the path thank's to the dictionnary visited and when the son become True (father of src) 
+                        path.append(node2)
+                        node2=visited[node2]# the son become the father
+                    path.reverse()# to put the path in the rigth order
                     return path
 
     @classmethod
