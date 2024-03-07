@@ -53,10 +53,9 @@ def test_A_star( file_name):
     #pour tester bfs de graph sur les fichiers grid
     s=Solver()
     grid=Grid.grid_from_file( file_name)
-    src=grid.hashable()
+    src=grid.state
     final_state=[]
     for i in range(grid.m):
         final_state +=list(range(i*grid.n+1, (i+1)*grid.n+1))
-    dst=final_state)
     graph=grid.create_graph()
-    return s.Astar(src,dst)
+    return s.Astar(grid,src,final_state)

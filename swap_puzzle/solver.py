@@ -2,7 +2,7 @@ from grid import Grid
 from time import time
 import heapq
 from node import Node
-
+from math import inf
 
 class Solver(): 
     """
@@ -63,16 +63,33 @@ class Solver():
         return h
 
     def Astar(self, grid, node_start, final_state):
+        """
+        Solves the grid using the A* algorithm 
+        
+        Parameters: 
+        -----------
+        grid: grid
+        node_start: list[list[int]]
+        final_state: list[list[int]]
+
+        Output: 
+        -------
+        grid: Grid
+            The grid
+
+        """
+        open_dict={}
         grid.state= node_start
         m,n=grid.m, grid.n
         closedList = set()
         Openlist =[]
         path=[]
         initial_state=Node(m,n,node_start)
-        closedList.add(initial_state.hashable())
         heapq.heappush(Openlist, initial_state)
+        open_dict[initial_state.hashable()]=0
         while len (Openlist)>0 :
             curent_state = heapq.heappop(Openlist)
+            closedList.add(curent_state.hashable())
             if curent_state.state==final_state:
                 while not curent_state.father is True: # create the path thank's to the dictionnary visited and when the son become True (father of the first state)
                     path.append(curent_state.state)
@@ -81,18 +98,19 @@ class Solver():
                 path.reverse()# to put the path in the rigth order
                 return path 
             
-            curent_neighbours= grid.neighbour()
+            curent_neighbours= curent_state.neighbour()
             for hashed_neighbour in curent_neighbours: 
                 if not(hashed_neighbour in closedList):
                     grid.reciproque(hashed_neighbour)
                     neighbour=Node(m,n,grid.state)
                     cost = curent_state.g + 1
-                    if curent_state.g == 0 or cost < neighbour.g:
+                    if curent_state.g == 0 or open_dict.get(hashed_neighbour,inf)> cost:
                         neighbour.g = cost
-                        neighbour.h = neighbour.heuristic()
+                        neighbour.h = neighbour.heuristic(final_state)
                         neighbour.f = neighbour.g + neighbour.h
                         neighbour.father = curent_state
                         heapq.heappush(Openlist, neighbour)
+                        open_dict[hashed_neighbour]=neighbour.g
         return None
 
 
