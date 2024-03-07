@@ -47,15 +47,3 @@ for i in range(3):
 #pour tester bfs de grid
 print(test_grid3("input/grid"+str(4)+".in"))
 
-# partie 2 dedier au 2 derniéres sances de TD:
-
-def test_A_star( file_name):
-    #pour tester bfs de graph sur les fichiers grid
-    s=Solver()
-    grid=Grid.grid_from_file( file_name)
-    src=grid.state
-    final_state=[]
-    for i in range(grid.m):
-        final_state +=list(range(i*grid.n+1, (i+1)*grid.n+1))
-    graph=grid.create_graph()
-    return s.Astar(grid,src,final_state)

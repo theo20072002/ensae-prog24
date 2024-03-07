@@ -64,32 +64,31 @@ class Solver():
 
     def Astar(self, grid, node_start, final_state):
         """
-        Solves the grid using the A* algorithm 
+        Solves the grid using the A* algorithm, return None if there is no solution
         
         Parameters: 
         -----------
         grid: grid
         node_start: list[list[int]]
         final_state: list[list[int]]
-
         Output: 
         -------
-        grid: Grid
-            The grid
+        path= list[list[list[int]]]
+            list of defferents states
 
         """
-        open_dict={}
+        open_dict={} #link an edge of the graph with the needed to reach it from the start 
         grid.state= node_start
         m,n=grid.m, grid.n
-        closedList = set()
-        Openlist =[]
-        path=[]
+        closedList = set()# represente all the edges visited
+        Openlist =[] # represente all the edges seen but not visited
+        path=[] # the path to go to the solution
         initial_state=Node(m,n,node_start)
         heapq.heappush(Openlist, initial_state)
         open_dict[initial_state.hashable()]=0
         while len (Openlist)>0 :
-            curent_state = heapq.heappop(Openlist)
-            closedList.add(curent_state.hashable())
+            curent_state = heapq.heappop(Openlist) #take out the smallest element of openlist 
+            closedList.add(curent_state.hashable()) # put the visited edge in closed list
             if curent_state.state==final_state:
                 while not curent_state.father is True: # create the path thank's to the dictionnary visited and when the son become True (father of the first state)
                     path.append(curent_state.state)
@@ -98,19 +97,19 @@ class Solver():
                 path.reverse()# to put the path in the rigth order
                 return path 
             
-            curent_neighbours= curent_state.neighbour()
+            curent_neighbours= curent_state.neighbour()# give the list of the neighbour of the current state  
             for hashed_neighbour in curent_neighbours: 
                 if not(hashed_neighbour in closedList):
-                    grid.reciproque(hashed_neighbour)
+                    grid.reciproque(hashed_neighbour) # transform the hashed_ neighbour in matrix : list(list(int))
                     neighbour=Node(m,n,grid.state)
-                    cost = curent_state.g + 1
-                    if curent_state.g == 0 or open_dict.get(hashed_neighbour,inf)> cost:
+                    cost = curent_state.g + 1 # cost needed to reach the neighbour from the start 
+                    if curent_state.g == 0 or open_dict.get(hashed_neighbour,inf)> cost: # if the new cost is smaller than the old one to reach neighbour, or the neigbhour wasn't seen before, we replace is cost with the new one. 
                         neighbour.g = cost
                         neighbour.h = neighbour.heuristic(final_state)
                         neighbour.f = neighbour.g + neighbour.h
-                        neighbour.father = curent_state
+                        neighbour.father = curent_state # allow to keep in memory the father of neigbhour
                         heapq.heappush(Openlist, neighbour)
-                        open_dict[hashed_neighbour]=neighbour.g
+                        open_dict[hashed_neighbour]=neighbour.g #we replace the new cost to go in the edge neighbour from the start; 
         return None
 
 

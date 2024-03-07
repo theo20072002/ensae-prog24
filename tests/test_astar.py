@@ -18,4 +18,4 @@ def test_A_star( file_name):
     graph=grid.create_graph()
     return s.Astar(grid,src,final_state)
 
-print(test_A_star("input/grid1.in"))
+print(test_A_star("input/grid3.in"))

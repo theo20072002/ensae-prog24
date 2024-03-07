@@ -94,6 +94,32 @@ class Grid():
             cell1, cell2 = cell_pair_list[i]
             self.swap(cell1,cell2)
 
+
+    def give_perform_swap(self, other_state):
+        """
+        Compare the curent state of the grid with an other one,if the two state are separeted with a swap return the swap, else return None . 
+
+        Parameters: 
+        -----------
+        other_state: list[list[int]]
+        
+        Output: 
+        -------
+        swap: tuple(tuple(int))
+            the format should be ((i1, j1), (i2, j2))
+        """
+        
+        incoherance_counter=0 # count the number of difference between the two state 
+        swap=[]
+        for i in range(self.m):
+            for j in range (self.n):
+                if self.state[i][j]!= other_state[i][j]:
+                    incoherance_counter+=1 
+                    swap.append((i,j))
+        if len(swap)==2 and abs(swap[0][0]-swap[1][0])+abs(swap[0][1]-swap[1][1])==1: # condition to be sur than states are separeted by only one swap
+            return list(swap)
+
+
     @classmethod
     def grid_from_file(cls, file_name): 
         """
