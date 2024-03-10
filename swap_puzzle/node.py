@@ -11,7 +11,6 @@ class Node(Grid):
         Grid.__init__(self,m,n,node)
         self.father = father
         self.g = 0  # cost form the start
-        self.h = 0  # cost estimated by the heuristic
         self.f = 0  # Coût total (f = g + h)
 
     def __lt__(self, other):
@@ -22,7 +21,7 @@ class Node(Grid):
     
     def heuristic(self, final_state): 
         #heuristic based on the norme1 for the matrix
-        return np.sum(abs(np.array(final_state)-np.array(self.state)))/2*self.n # division by 2*n to be sure to under_estimate the path, because each swap reduce the heuristic by max 2*n
+        return np.sum(abs(np.array(final_state)-np.array(self.state)))/(2*self.n) # division by 2*n to be sure to under_estimate the path, because each swap reduce the heuristic by max 2*n
     
     def heuristic_manhattan(self,final_state): 
         #heuristic based on the manhattan distance

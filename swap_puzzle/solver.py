@@ -105,8 +105,7 @@ class Solver():
                     cost = curent_state.g + 1 # cost needed to reach the neighbour from the start 
                     if curent_state.g == 0 or open_dict.get(hashed_neighbour,inf)> cost: # if the new cost is smaller than the old one to reach neighbour, or the neigbhour wasn't seen before, we replace is cost with the new one. 
                         neighbour.g = cost
-                        neighbour.h = neighbour.heuristic(final_state)
-                        neighbour.f = neighbour.g + neighbour.h
+                        neighbour.f = neighbour.g + neighbour.heuristic_manhattan(final_state)
                         neighbour.father = curent_state # allow to keep in memory the father of neigbhour
                         heapq.heappush(Openlist, neighbour)
                         open_dict[hashed_neighbour]=neighbour.g #we replace the new cost to go in the edge neighbour from the start; 
