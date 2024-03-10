@@ -1,7 +1,7 @@
 """
 This is the grid module. It contains the Grid class and its associated methods.
 """
-import random
+import random as rd
 from graph import Graph
 import copy
 import queue
@@ -62,6 +62,12 @@ class Grid():
         """
         return f"<grid.Grid: m={self.m}, n={self.n}>"
 
+
+    def random(self):
+        state = list(range(1, self.m*self.n+1))
+        rd.shuffle(state)
+        self.state = [[state[self.n * i + j] for j in range(self.n)] for i in range(self.m)]
+
     def is_sorted(self):
         """
         Checks is the current state of the grid is sorte and returns the answer as a boolean.
@@ -76,8 +82,12 @@ class Grid():
         -----------
         cell1, cell2: tuple[int]
             The two cells to swap. They must be in the format (i, j) where i is the line and j the column number of the cell. 
+        
+        Output: 
+        -------
+        False: if swap is not allowed
         """
-        if abs (cell2[0]-cell1[0] )+ abs (cell2[1]-cell1[1] )>1 or not (0<=cell2[0]<self.m and 0<=cell2[1]< self.n and 0<=cell1[0]<self.m and 0<=cell1[1]< self.n): return None
+        if abs (cell2[0]-cell1[0] )+ abs (cell2[1]-cell1[1] )>1 or not (0<=cell2[0]<self.m and 0<=cell2[1]< self.n and 0<=cell1[0]<self.m and 0<=cell1[1]< self.n): return False
         self.state[cell2[0]][cell2[1]],self.state[cell1[0]][cell1[1]]=self.state[cell1[0]][cell1[1]],self.state[cell2[0]][cell2[1]]
 
     def swap_seq(self, cell_pair_list):
@@ -119,7 +129,7 @@ class Grid():
         if len(swap)==2 and abs(swap[0][0]-swap[1][0])+abs(swap[0][1]-swap[1][1])==1: # condition to be sur than states are separeted by only one swap
             return tuple(swap)
 
-    def performed_swaps(self, others_states):
+    def performed_swap_seq(self, others_states):
         """
         transforme liste of state separeted by swap in the liste of swap performed  . 
 
@@ -218,11 +228,11 @@ class Grid():
         for i in range(self.m):
             for j in range(self.n):
                 self.state=copy.deepcopy(m)
-                self.swap((i,j),(i+1,j))
-                v.append(copy.deepcopy(self.hashable()))#put the hashe of the neighbour in v
+                if self.swap((i,j),(i+1,j)) is None: # chek if the swap is allowed
+                    v.append(copy.deepcopy(self.hashable()))#put the hashe of the neighbour in v
                 self.state=copy.deepcopy(m)
-                self.swap((i,j),(i,j+1))
-                v.append(copy.deepcopy(self.hashable()))#put the hashe of the neighbour in v
+                if self.swap((i,j),(i,j+1)) is None: # chek if the swap is allowed
+                    v.append(copy.deepcopy(self.hashable()))#put the hashe of the neighbour in v
         self.state=copy.deepcopy(m)
         return v
 
@@ -259,48 +269,6 @@ class Grid():
             if node2 not in g.graph or node1 not in g.graph[node2]:
                 g.add_edge(node1,node2)
         return g
-
-                
-
-    
-    def bfs (self):
-        """
-        
-        apply the bfs in creating the graph at the same time to find one of the shortest path to solve the problem 
-        
-        Output: 
-        -------
-        path: list of node 
-
-        """
-        m,n=self.m, self.n
-        file=queue.Queue()#create the queue of the node we have to explore
-        file.put(self.hashable())
-        visited={self.hashable(): True} # create a dictionnary wich take as kee the son and as value the father of each edges of the graph. the father of scr is True
-        final_state=[] #is the hashe of the final matrix 
-        path=[]# is the path of our nodes
-
-        #create final state
-        for i in range(m):
-            final_state +=list(range(i*n+1, (i+1)*n+1))
-        final_state=tuple(final_state)
-
-
-        while not file.empty():#  return nothing if after exploring all our graph we don't find any solution
-            node1=file.get()
-            self.reciproque(node1) # we put the state of our graphe on the node1 state, to do our swap in neighbour 
-            for node2 in self.neighbour():# node2 is one of the node related to a in our graph
-                if node2 not in visited : 
-                    visited[node2]=node1# we put the son node2 as kee in visited related to the value node1 wich is it father in our graph
-                    file.put(node2)
-                
-                if node2 == final_state:
-                    while not node2 is True: # create the path thank's to the dictionnary visited and when the son become True (father of the first state)
-                        self.reciproque(node2)# we put the state of node2 on current state of our graphe to put the node of the path on a matrix mode in path  
-                        path.append(self.state)
-                        node2=visited[node2]
-                    path.reverse()# to put the path in the rigth order
-                    return path 
 
 
     def afficher (self):

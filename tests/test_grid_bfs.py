@@ -2,48 +2,39 @@
 import sys 
 sys.path.append("swap_puzzle/")
 
-from graph import Graph
+import unittest 
 from grid import Grid
 from solver import Solver
-from time import time
-
-# partie 1 dedier au 2 premiers TD:
-
-def test_grid1( file_name):
-    #pour tester get_solution sur les fichiers grid
-    grid=Grid.grid_from_file( file_name)
-    s=Solver()
-    return s.get_solution(grid)
-
-def test_grid2( file_name):
-    #pour tester bfs de graph sur les fichiers grid
-    grid=Grid.grid_from_file( file_name)
-    src=grid.hashable()
-    final_state=[]
-    for i in range(grid.m):
-        final_state +=list(range(i*grid.n+1, (i+1)*grid.n+1))
-    dst=tuple(final_state)
-    graph=grid.create_graph()
-    return graph.bfs(src,dst)
+import copy
 
 
-def test_grid3( file_name):
-    #pour tester bfs de grid sur les fichiers grid
-    grid=Grid.grid_from_file( file_name)
-    return grid.bfs()
+class Test_BFS(unittest.TestCase):
 
-#pour evaluer le temps de calcule de get_solution
-for i in range(5):
-    t=time()
-    print(test_grid1("input/grid"+str(i)+".in"))
-    print(time()-t)
+    def test_bfs_grid1(self):
+        g = Grid.grid_from_file("input/grid1.in")
+        initial_state=copy.deepcopy(g.state)
+        final_state=[list(range(i*g.n+1, (i+1)*g.n+1)) for i in range(g.m)]
+        s=Solver()
+        path=s.bfs(g)
+        self.assertEqual(len(path)-1,1)
+        sequence=g.performed_swap_seq(path)
+        g.state=copy.deepcopy(path[0])
+        self.assertEqual(initial_state,g.state)
+        g.swap_seq(sequence)
+        self.assertEqual(g.state,final_state)
 
-#pour verifier si le cheminde de get_solution est minimal :
-for i in range(3):
-    if len(test_grid1("input/grid"+str(i)+".in"))>len(test_grid3("input/grid"+str(i)+".in")):
-        print("la solution n'est pas minimale")
-    else : print("la solution est minimale")
+    def test_bfs_grid0(self):
+        g = Grid.grid_from_file("input/grid0.in")
+        initial_state=copy.deepcopy(g.state)
+        final_state=[list(range(i*g.n+1, (i+1)*g.n+1)) for i in range(g.m)]
+        s=Solver()
+        path=s.bfs(g)
+        self.assertEqual(len(path)-1,2)
+        sequence=g.performed_swap_seq(path)
+        g.state=copy.deepcopy(path[0])
+        self.assertEqual(initial_state,g.state)
+        g.swap_seq(sequence)
+        self.assertEqual(g.state,final_state)
 
-#pour tester bfs de grid
-print(test_grid3("input/grid"+str(4)+".in"))
-
+if __name__ == '__main__':
+    unittest.main()

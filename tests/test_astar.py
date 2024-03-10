@@ -2,31 +2,39 @@
 import sys 
 sys.path.append("swap_puzzle/")
 
-from graph import Graph
+import unittest 
 from grid import Grid
 from solver import Solver
-import cProfile
-from time import time
+import copy
 
-def test_A_star( file_name):
-    #pour tester bfs de graph sur les fichiers grid
-    s=Solver()
-    grid=Grid.grid_from_file( file_name)
-    src=grid.state
-    final_state=[]
-    for i in range(grid.m):
-        final_state.append(list(range(i*grid.n+1, (i+1)*grid.n+1)))
-    return s.Astar(grid,src,final_state)
 
-path = test_A_star("input/grid4.in")
-swap_path = []
-initial_grid = Grid.grid_from_file("input/grid4.in")
-grid = Grid.grid_from_file("input/grid4.in")
-n = 0
-for i in range(len(path) - 1):
-    grid.state = path[i]
-    swap = grid.give_perform_swap(path[i+1])
-    swap_path.append(swap)
-    n += 1
-initial_grid.swap_seq(swap_path)
-print(initial_grid)
+class Test_Astar(unittest.TestCase):
+
+    def test_Astar_grid1(self):
+        g = Grid.grid_from_file("input/grid1.in")
+        initial_state=copy.deepcopy(g.state)
+        final_state=[list(range(i*g.n+1, (i+1)*g.n+1)) for i in range(g.m)]
+        s=Solver()
+        path=s.Astar(g)
+        self.assertEqual(len(path)-1,1)
+        sequence=g.performed_swap_seq(path)
+        g.state=copy.deepcopy(path[0])
+        self.assertEqual(initial_state,g.state)
+        g.swap_seq(sequence)
+        self.assertEqual(g.state,final_state)
+
+    def test_Astar_grid0(self):
+        g = Grid.grid_from_file("input/grid0.in")
+        initial_state=copy.deepcopy(g.state)
+        final_state=[list(range(i*g.n+1, (i+1)*g.n+1)) for i in range(g.m)]
+        s=Solver()
+        path=s.Astar(g)
+        self.assertEqual(len(path)-1,2)
+        sequence=g.performed_swap_seq(path)
+        g.state=copy.deepcopy(path[0])
+        self.assertEqual(initial_state,g.state)
+        g.swap_seq(sequence)
+        self.assertEqual(g.state,final_state)
+
+if __name__ == '__main__':
+    unittest.main()

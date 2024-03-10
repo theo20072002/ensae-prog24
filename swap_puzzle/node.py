@@ -19,11 +19,12 @@ class Node(Grid):
     def __eq__(self, other):
         return self.f == other.f
     
-    def heuristic(self, final_state): 
+    def heuristic_norme1(self): 
         #heuristic based on the norme1 for the matrix
+        final_state=[list(range(i*self.n+1,(i+1)*self.n+1)) for i in range(self.m) ]
         return np.sum(abs(np.array(final_state)-np.array(self.state)))/(2*self.n) # division by 2*n to be sure to under_estimate the path, because each swap reduce the heuristic by max 2*n
     
-    def heuristic_manhattan(self,final_state): 
+    def heuristic_manhattan(self): 
         #heuristic based on the manhattan distance
         
         final_state=[list(range(i*self.n+1,(i+1)*self.n+1)) for i in range(self.m) ]
@@ -33,6 +34,22 @@ class Node(Grid):
         return np.sum(row_distance+column_distance)/2 # division by 2 to be sure to under_estimate the path, because each swap reduce the heuristic by max 2
     
 
+    def heuristic_manhattan2(self): 
+        #heuristic based on the manhattan distance
+        
+        final_state=[list(range(i*self.n+1,(i+1)*self.n+1)) for i in range(self.m) ]
+
+        row_distance=abs(np.array(self.state)-np.array(final_state))//self.n
+        column_distance=abs(np.array(self.state)-np.array(final_state))%self.n
+        return np.sum(row_distance+column_distance)
+
+    def heuristic_manhattan3(self): 
+        #heuristic based on the manhattan distance
+        
+        final_state=[list(range(i*self.n+1,(i+1)*self.n+1)) for i in range(self.m) ]
+
+        row_distance=abs(np.array(self.state)-np.array(final_state))//self.n
+        column_distance=abs(np.array(self.state)-np.array(final_state))%self.n
+        return np.sum(row_distance+column_distance)*10
     
-
-
+    

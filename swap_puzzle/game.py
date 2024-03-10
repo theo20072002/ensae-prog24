@@ -267,61 +267,6 @@ else :
 
 
 
-
-
-# A* resolution of the puzzle
-
-
-# final state:
-final_state=[[i+1 for i in range(j*BOARD_WIDTH,(j+1)*BOARD_WIDTH)] for j in range(BOARD_HEIGHT)]
-
-# initial state: 
-initial_state=copy.deepcopy(board)
-
-#solve the puzzle with A*
-s=Solver()
-grid=Grid(BOARD_HEIGHT,BOARD_WIDTH,initial_state)
-solution_state=s.Astar(grid,initial_state,final_state)
-
-#minimum number of swap required
-min_switch_number= len(solution_state)-1
-
-# path possible to solve the puzzle
-solution_swap=grid.performed_swaps(solution_state)#transform the list of 2D array in required swap 
-grid.state=copy.deepcopy(initial_state)
-
-solution=[] # list of the row of teh solution
-max_swap_row=12 # number max of swap per row for the display
-count_swap_row=0 #number of swap in the current row 
-solution_row=str()
-for i in range(min_switch_number):
-    count_swap_row+=1
-    if count_swap_row==12 or i==min_switch_number-1:
-        (x1,y1),(x2,y2)=solution_swap[i]
-        solution_row+=str(grid.state[x1][y1])+" -> " +str(grid.state[x2][y2])# the number of the case switched are stockd in row
-        grid.swap((x1,y1),(x2,y2)) # update the state of teh swap after the switch
-        solution.append(solution_row)
-        solution_row=str() # resart a new row
-        count_swap_row=0
-    else :
-        (x1,y1),(x2,y2)=solution_swap[i]
-        solution_row+=str(grid.state[x1][y1])+" -> " +str(grid.state[x2][y2]) +" , "# the number of the case switched are stockd in row
-        grid.swap((x1,y1),(x2,y2)) # update the state of teh swap after the switch
-print(solution)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # interface where the player can play
 
 
@@ -340,7 +285,11 @@ score_rect= text_score.get_rect(center=(x_score,y_score+SCORE_SIZE//2))
 # initial selected tile (-1, -1 -> no tile is selected)
 selected_row, selected_column = -1, -1
 
+# final state:
+final_state=[[i+1 for i in range(j*BOARD_WIDTH,(j+1)*BOARD_WIDTH)] for j in range(BOARD_HEIGHT)]
 
+# initial state: 
+initial_state=copy.deepcopy(board)
 
 #  loop for the restart screen loop and Game loop
 while True:
@@ -420,12 +369,69 @@ while True:
 
 
 
+
+
+
+
+
+
+
+
+    #solve the puzzle with A*
+    s=Solver()
+    grid=Grid(BOARD_HEIGHT,BOARD_WIDTH,initial_state)
+    if BOARD_HEIGHT*BOARD_WIDTH<=12:
+        solution_state=s.Astar(grid,"heuristic_manhattan")[0]
+    elif BOARD_HEIGHT*BOARD_WIDTH<15:
+        solution_state=s.Astar(grid,"heuristic_manhattan2")[0]
+    else :
+        solution_state=s.Astar(grid,"heuristic_manhattan3")[0]
+
+    #minimum number of swap required
+    min_switch_number= len(solution_state)-1
+
+    # path possible to solve the puzzle
+    solution_swap=grid.performed_swap_seq(solution_state)#transform the list of 2D array in required swap 
+    grid.state=copy.deepcopy(initial_state)
+
+    solution=[] # list of the row of teh solution
+    max_swap_row=12 # number max of swap per row for the display
+    count_swap_row=0 #number of swap in the current row 
+    solution_row=str()
+    for i in range(min_switch_number):
+        count_swap_row+=1
+        if count_swap_row==12 or i==min_switch_number-1:
+            (x1,y1),(x2,y2)=solution_swap[i]
+            solution_row+=str(grid.state[x1][y1])+" -> " +str(grid.state[x2][y2])# the number of the case switched are stockd in row
+            grid.swap((x1,y1),(x2,y2)) # update the state of teh swap after the switch
+            solution.append(solution_row)
+            solution_row=str() # resart a new row
+            count_swap_row=0
+        else :
+            (x1,y1),(x2,y2)=solution_swap[i]
+            solution_row+=str(grid.state[x1][y1])+" -> " +str(grid.state[x2][y2]) +" , "# the number of the case switched are stockd in row
+            grid.swap((x1,y1),(x2,y2)) # update the state of teh swap after the switch
+
+
+
+
+
+
+
+
+
+
+
+
     # interface to give a solution and restart to solve the same grid 
 
     # text on the restart screen:
     text_restarts=[font_restart.render("Le nombre de coups utiliser pour resoudre le puzzle est de:", True, WHITE)]
     text_restarts.append(font_restart.render(str(switch_number), True, BLACK))
-    text_restarts.append(font_restart.render("Le nombre minimal de coups pour resoudre ce puzzle est de: ", True, WHITE))
+    if BOARD_HEIGHT*BOARD_WIDTH<=12:# if A* can give an exact solution
+        text_restarts.append(font_restart.render("Le nombre minimal de coups pour resoudre ce puzzle est de: ", True, WHITE))
+    else: 
+        text_restarts.append(font_restart.render("Une bonne aproximation du nombre minimal de coups pour resoudre ce puzzle est de: ", True, WHITE))
     text_restarts. append(font_restart.render(str(min_switch_number), True, BLACK))
     text_restarts.append(font_restart.render("Une solution minimal possible est : ", True, WHITE))
     for i in range (len(solution)):
