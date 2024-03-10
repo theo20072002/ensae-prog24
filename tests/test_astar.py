@@ -15,7 +15,7 @@ class Test_Astar(unittest.TestCase):
         initial_state=copy.deepcopy(g.state)
         final_state=[list(range(i*g.n+1, (i+1)*g.n+1)) for i in range(g.m)]
         s=Solver()
-        path=s.Astar(g)
+        path=s.Astar(g, "heuristic_manhattan")
         self.assertEqual(len(path)-1,1)
         sequence=g.performed_swap_seq(path)
         g.state=copy.deepcopy(path[0])
@@ -28,7 +28,7 @@ class Test_Astar(unittest.TestCase):
         initial_state=copy.deepcopy(g.state)
         final_state=[list(range(i*g.n+1, (i+1)*g.n+1)) for i in range(g.m)]
         s=Solver()
-        path=s.Astar(g)
+        path=s.Astar(g,"heuristic_manhattan")
         self.assertEqual(len(path)-1,2)
         sequence=g.performed_swap_seq(path)
         g.state=copy.deepcopy(path[0])

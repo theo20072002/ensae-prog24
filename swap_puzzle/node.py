@@ -50,6 +50,6 @@ class Node(Grid):
 
         row_distance=abs(np.array(self.state)-np.array(final_state))//self.n
         column_distance=abs(np.array(self.state)-np.array(final_state))%self.n
-        return np.sum(row_distance+column_distance)*10
+        return np.sum(row_distance+column_distance)*5
     
     

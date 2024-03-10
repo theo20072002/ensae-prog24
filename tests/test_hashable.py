@@ -6,7 +6,7 @@ sys.path.append("swap_puzzle/")
 import unittest 
 from grid import Grid
 
-class Test_performed_swap(unittest.TestCase):
+class Test_hashable(unittest.TestCase):
     def test_hashable(self):
         grid = Grid.grid_from_file("input/grid1.in")
         hashed=grid.hashable()
